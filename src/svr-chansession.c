@@ -438,6 +438,16 @@ static int sessionsignal(const struct ChanSess *chansess) {
 		return DROPBEAR_FAILURE;
 	}
 
+	if (svr_opts.forced_command || svr_pubkey_has_forced_command()) {
+		TRACE(("disallowed signal for forced_command"));
+		return DROPBEAR_FAILURE;
+	}
+
+	if (DROPBEAR_SVR_MULTIUSER && !DROPBEAR_SVR_DROP_PRIVS) {
+		TRACE(("disallow signal without drop privs"));
+		return DROPBEAR_FAILURE;
+	}
+
 	signame = buf_getstring(ses.payload, NULL);
 
 	for (i = 0; signames[i].name != NULL; i++) {
